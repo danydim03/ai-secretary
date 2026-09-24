@@ -43,6 +43,33 @@ class GoldenQAEvaluationTests(unittest.TestCase):
         self.assertIn("evidence_id", packet["results"][0])
         self.assertIn("source_sha256", packet["results"][0])
 
+    def test_retrieval_preserves_negation_in_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            store = Path(temporary) / "store"
+            ingest(FIXTURES / "rinnovo.txt", store)
+            packet = search_documents("rinnovo automatico", store, limit=6)
+
+        self.assertEqual(len(packet["results"]), 1)
+        self.assertIn("non prevede il rinnovo automatico", packet["results"][0]["text"])
+
+    def test_retrieval_keeps_both_conflicting_dates_for_review(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            store = Path(temporary) / "store"
+            ingest(FIXTURES / "addendum.txt", store)
+            packet = search_documents("scadenza contratto 2026", store, limit=6)
+
+        self.assertEqual(len(packet["results"]), 1)
+        self.assertIn("30 giugno 2026", packet["results"][0]["text"])
+        self.assertIn("15 luglio 2026", packet["results"][0]["text"])
+
+    def test_search_returns_no_evidence_when_the_archive_has_no_answer(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            store = Path(temporary) / "store"
+            ingest(FIXTURES / "consegna.txt", store)
+            packet = search_documents("rimborso pernottamento", store, limit=6)
+
+        self.assertEqual(packet["results"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
