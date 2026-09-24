@@ -39,4 +39,4 @@ gantt
 
 ## Pubblicazione del codice su GitHub
 
-La cartella non ha ancora metadati Git locali. La pubblicazione della repository `ai-secretary` è autorizzata come pubblica; la creazione remota e il push sono in attesa di un canale GitHub operativo in questa sessione. Prima del push va ricontrollato che nell'indice Git entrino solo file del progetto e che `.env`, `data/` e `.venv/` restino esclusi.
+La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. Il branch `main` contiene il commit iniziale del progetto. L'indice Git era stato controllato prima del push: `.env`, `data/` e `.venv/` non sono inclusi. La cartella locale segue ora la repository remota.

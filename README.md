@@ -2,6 +2,8 @@
 
 Questo repository è il workspace del prodotto AI Secretary, da costruire e usare insieme a **Pi Agent**. Pi lavora sui file del progetto e segue le regole in `AGENTS.md`; il software qui presente è ancora un prototipo iniziale, non un assistente documentale pronto per l'uso quotidiano. Il piano tecnico allegato è la roadmap di prodotto.
 
+Repository GitHub pubblica: [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary).
+
 Stato e sequenza stimata: [diagramma Gantt](docs/ROADMAP_GANTT.md).
 
 Per iniziare con Pi: `cd ai-secretary && pi`. Dopo aver autorizzato il progetto, l'estensione locale in `.pi/extensions/ai-secretary.ts` espone a Pi strumenti per elencare, importare, cercare, mostrare e validare i documenti. Ricerca e visualizzazione richiedono una conferma esplicita prima che estratti siano passati al modello. Il comando `/secretary` mostra le operazioni disponibili. La prima sessione è descritta in `docs/PI_FIRST_SESSION.md`. Pi Agent è il cockpit di sviluppo e controllo; gli agenti del prodotto verranno orchestrati dal runtime locale del progetto, non avviati automaticamente all'apertura di Pi. Il prototipo CLI resta utilizzabile separatamente.
