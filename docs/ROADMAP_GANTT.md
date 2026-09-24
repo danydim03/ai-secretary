@@ -45,4 +45,4 @@ gantt
 
 ## Pubblicazione del codice su GitHub
 
-La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. `main` segue la repository remota; `.env`, `data/` e `.venv/` restano esclusi. La CI GitHub è verde sul commit `dc34e2d`; i test typo-aware attendono il prossimo run.
+La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. `main` segue la repository remota; `.env`, `data/` e `.venv/` restano esclusi. La CI GitHub è verde sul commit `26a49fd`, che include i test typo-aware di `9c54a6c` e le verifiche d'estrazione più recenti.
