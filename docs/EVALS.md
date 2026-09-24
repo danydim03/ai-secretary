@@ -10,6 +10,7 @@ Le fixture in `tests/fixtures/evals/` sono sintetiche e non contengono documenti
 - che un `evidence_id` esistente e incluso nel pacchetto retrieval superi la verifica locale;
 - che una citazione inventata o valida ma non recuperata venga respinta;
 - che una negazione resti nel passaggio recuperato;
+- che una parola con un errore di battitura possa recuperare il termine sorgente vicino;
 - che entrambe le date di fonti contraddittorie restino disponibili per la revisione;
 - che la ricerca non inventi evidenze quando la risposta manca dall'archivio;
 - che il testo di una fixture con istruzioni malevole sia estratto e conservato come contenuto sorgente.

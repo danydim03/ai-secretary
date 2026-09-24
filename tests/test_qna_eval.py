@@ -70,6 +70,17 @@ class GoldenQAEvaluationTests(unittest.TestCase):
 
         self.assertEqual(packet["results"], [])
 
+    def test_character_trigrams_recover_a_typo_without_losing_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            store = Path(temporary) / "store"
+            ingest(FIXTURES / "consegna.txt", store)
+            packet = search_documents("consenga", store, limit=6)
+
+        self.assertEqual(len(packet["results"]), 1)
+        self.assertIn("character_trigram", packet["results"][0]["retrieval_methods"])
+        self.assertIn("evidence_id", packet["results"][0])
+        self.assertIn("source_sha256", packet["results"][0])
+
 
 if __name__ == "__main__":
     unittest.main()

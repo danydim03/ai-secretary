@@ -18,6 +18,7 @@ gantt
 
     section M2 · Q&A e report citabili
     Retrieval lessicale, Q&A Pi e citazioni verificate          :done, m2base, 2026-09-24, 1d
+    Retrieval BM25 con tolleranza typo a trigrammi               :done, m2hybrid, 2026-09-24, 1d
     Eval retrieval/evidence con fixture golden iniziali           :done, m2evalbase, 2026-09-24, 1d
     Verifica semantica dei claim ed evals LLM                    :active, m2, 2026-09-25, 10d
     Ricerca ibrida e misura copertura/correttezza citazioni     :m2eval, after m2, 5d
@@ -37,11 +38,11 @@ gantt
 ## Stato al momento
 
 - **M1 completata per la prima release locale:** PDF per blocchi con pagina/coordinate/intervallo; TXT grezzo, incluso warning per UTF-8 invalido; DOCX con ordine di paragrafi e tabelle; warning per pagine PDF scansite; hash e reimportazione idempotente. Journal locale registra azioni, riferimenti e stime di token/costo Pi senza testo sorgente o query. 16 test di base e workflow CI GitHub verdi.
-- **M2 in corso:** `/ask-secretary <domanda>` usa il modello autenticato in Pi, dopo aver mostrato gli estratti precisi e ricevuto conferma. Il verificatore locale blocca ID inesistenti e riferimenti fuori dal pacchetto retrieval; claim e bozza vengono salvati localmente. La prova automatica controlla l'esistenza e la provenienza dell'evidenza, non l'entailment semantico.
-- **Eval M2 iniziali:** quattro fixture sintetiche controllano data attesa, riferimenti citabili, negazione, date contraddittorie, assenza di prove e l'estrazione di un tentativo di prompt injection come normale testo della fonte. Suite locale complessiva: 21 test verdi; i test non chiamano un modello esterno né dimostrano la robustezza semantica contro injection.
+- **M2 in corso:** `/ask-secretary <domanda>` usa il modello autenticato in Pi, dopo aver mostrato gli estratti precisi e ricevuto conferma. Il verificatore locale blocca ID inesistenti e riferimenti fuori dal pacchetto retrieval; claim e bozza vengono salvati localmente. La prova automatica controlla l'esistenza e la provenienza dell'evidenza, non l'entailment semantico. Retrieval: BM25 con un fallback a trigrammi per errori di battitura; non usa embedding semantici.
+- **Eval M2 iniziali:** quattro fixture sintetiche controllano data attesa, riferimenti citabili, typo, negazione, date contraddittorie, assenza di prove e l'estrazione di un tentativo di prompt injection come normale testo della fonte. Suite locale complessiva: 22 test verdi; i test non chiamano un modello esterno né dimostrano la robustezza semantica contro injection.
 - **Da completare in M2:** eval live per qualità delle risposte, revisione semantica dei claim e test dell'interazione Pi end-to-end. Il report marca i claim come “da verificare”: la copertura cita ID esistenti e recuperati, ma non prova che le frasi siano supportate. La ricerca rimane lessicale (nessun embedding).
 - **Non iniziato:** M3–M5. Restano CSV/XLSX, calcoli e grafici, connettori in modalità bozza, grant di approvazione, audit completo, backup e hardening.
 
 ## Pubblicazione del codice su GitHub
 
-La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. `main` segue la repository remota; `.env`, `data/` e `.venv/` restano esclusi. La CI GitHub è verde sul commit `dc34e2d`; i due nuovi test di estrazione attendono il prossimo run.
+La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. `main` segue la repository remota; `.env`, `data/` e `.venv/` restano esclusi. La CI GitHub è verde sul commit `dc34e2d`; i test typo-aware attendono il prossimo run.

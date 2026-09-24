@@ -33,7 +33,7 @@ Gli originali sono conservati in `data/raw/`; i JSON canonici in `data/canonical
 - TXT: conserva il testo decodificato completo, incluse righe vuote; normalizza solo le terminazioni CRLF/CR nella vista ricercabile. Le sequenze UTF-8 non valide generano un warning e l'originale binario resta archiviato.
 - DOCX: estrae paragrafi e tabelle nell'ordine del corpo, mantenendo testo grezzo e una vista normalizzata; segnala esplicitamente che immagini, intestazioni, piè di pagina, note e commenti non sono inclusi.
 - L'archivio è locale, non cifrato e monoutente: non contiene ancora DB, autenticazione, backup o ricerca semantica.
-- La ricerca attuale è lessicale e locale: non è ricerca semantica.
+- La ricerca attuale combina BM25 locale e similarità di trigrammi dei termini per tollerare alcuni errori di battitura; non comprende sinonimi né è ricerca semantica.
 - Il Q&A produce claim con evidenze selezionate localmente e cita solo gli ID recuperati per la richiesta. Il validatore controlla gli ID e la provenienza, ma non verifica automaticamente l'entailment semantico: rivedi ogni bozza.
 - I documenti restano locali sul disco; gli estratti vengono inviati al provider Pi selezionato solo per il Q&A o gli strumenti di lettura dopo conferma. Si applicano le condizioni e i limiti dell'account/provider configurato in Pi.
 - Non sono ancora implementati orchestrazione multi-agente, importazione CSV/XLSX, calcoli/grafici, connettori o pubblicazione.

@@ -15,10 +15,36 @@ _TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 _K1 = 1.5
 _B = 0.75
 _MAX_EXCERPT_CHARS = 2_400
+_MIN_CHAR_DICE = 0.5
 
 
 def _tokens(text: str) -> list[str]:
     return [token.casefold() for token in _TOKEN_RE.findall(text)]
+
+
+def _char_ngrams(token: str) -> set[str]:
+    if len(token) < 4:
+        return set()
+    return {token[index:index + 3] for index in range(len(token) - 2)}
+
+
+def _char_similarity(query_terms: list[str], document_tokens: list[str]) -> float:
+    """Return the strongest token-level trigram Dice similarity for typo recall."""
+    candidates = {token for token in document_tokens if len(token) >= 4}
+    best = 0.0
+    for term in query_terms:
+        query_grams = _char_ngrams(term)
+        if not query_grams:
+            continue
+        for token in candidates:
+            if token == term:
+                continue
+            token_grams = _char_ngrams(token)
+            denominator = len(query_grams) + len(token_grams)
+            if denominator:
+                similarity = 2 * len(query_grams & token_grams) / denominator
+                best = max(best, similarity)
+    return best
 
 
 def _excerpt(text: str, query_terms: list[str]) -> tuple[str, bool, int, int]:
@@ -100,7 +126,8 @@ def search_documents(
             idf = math.log(1 + (len(corpus) - df + 0.5) / (df + 0.5))
             denominator = tf + _K1 * (1 - _B + _B * item["length"] / average_length)
             score += idf * (tf * (_K1 + 1) / denominator) * (1 + math.log(qf))
-        if score <= 0:
+        char_similarity = _char_similarity(list(query_frequency), item["tokens"])
+        if score <= 0 and char_similarity < _MIN_CHAR_DICE:
             continue
 
         document = item["document"]
@@ -116,12 +143,13 @@ def search_documents(
             "source_sha256": document["source"]["sha256"],
             "block_id": block["block_id"],
             "source_locator": locator,
-            "score": round(score, 6),
+            "score": round(score + char_similarity * 0.05, 6),
+            "retrieval_methods": (["bm25"] if score > 0 else []) + (["character_trigram"] if char_similarity >= _MIN_CHAR_DICE else []),
             "text": excerpt,
             "excerpt_truncated": truncated,
             "extraction_warnings": document["extraction_warnings"],
         }
-        ranked.append((score, document["document_id"], block["block_id"], evidence))
+        ranked.append((score + char_similarity * 0.05, document["document_id"], block["block_id"], evidence))
 
     ranked.sort(key=lambda row: (-row[0], row[1], row[2]))
     return {
