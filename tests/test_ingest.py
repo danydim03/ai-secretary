@@ -32,6 +32,18 @@ class IngestionTests(unittest.TestCase):
         self.assertEqual(document["blocks"][0]["normalized_text"], "Prima riga\n\nSeconda riga\n")
         self.assertEqual(len(list((self.store / "canonical").glob("doc_*.json"))), 1)
 
+    def test_txt_invalid_utf8_is_warned_and_original_bytes_are_preserved(self) -> None:
+        source = self.root / "invalid.txt"
+        original = b"inizio\xfffine"
+        source.write_bytes(original)
+
+        document = ingest(source, self.store)["document"]
+        archived = Path(document["source"]["storage_uri"])
+
+        self.assertIn("\ufffd", document["blocks"][0]["raw_text"])
+        self.assertEqual(document["extraction_warnings"][0]["code"], "text_decode_replacement")
+        self.assertEqual(archived.read_bytes(), original)
+
     @unittest.skipUnless(importlib.util.find_spec("fitz"), "PyMuPDF non installato nell'ambiente di test")
     def test_pdf_blocks_include_page_bbox_and_char_range(self) -> None:
         import fitz
@@ -51,6 +63,26 @@ class IngestionTests(unittest.TestCase):
         self.assertEqual(len(first["source_locator"]["bbox"]), 4)
         self.assertEqual(len(first["source_locator"]["char_range"]), 2)
         self.assertEqual(document["extraction_warnings"], [])
+
+    @unittest.skipUnless(importlib.util.find_spec("fitz"), "PyMuPDF non installato nell'ambiente di test")
+    def test_image_only_pdf_page_emits_ocr_warnings(self) -> None:
+        import fitz
+
+        source = self.root / "scan.pdf"
+        pdf = fitz.open()
+        page = pdf.new_page()
+        pixmap = fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 8, 8), False)
+        pixmap.clear_with(255)
+        page.insert_image(page.rect, pixmap=pixmap)
+        pdf.save(source)
+        pdf.close()
+
+        document = ingest(source, self.store)["document"]
+        warning_codes = {warning["code"] for warning in document["extraction_warnings"]}
+
+        self.assertEqual(document["blocks"], [])
+        self.assertIn("page_without_text", warning_codes)
+        self.assertIn("page_contains_images", warning_codes)
 
     @unittest.skipUnless(importlib.util.find_spec("docx"), "python-docx non installato nell'ambiente di test")
     def test_docx_preserves_body_order_for_paragraph_and_table(self) -> None:
