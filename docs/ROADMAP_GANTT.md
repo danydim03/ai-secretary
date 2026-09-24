@@ -14,7 +14,7 @@ gantt
     Estrazione fedele PDF/TXT/DOCX e import idempotente          :done, m1extract, 2026-09-24, 1d
     Fixture PDF/DOCX/TXT e criteri di estrazione                 :done, m1accept, 2026-09-24, 1d
     Journal audit locale e stima uso modello                     :done, m1audit, 2026-09-24, 1d
-    Primo run CI su GitHub e revisione finale M1                 :active, m1ci, 2026-09-25, 3d
+    Primo run CI su GitHub e revisione finale M1                 :done, m1ci, 2026-09-24, 1d
 
     section M2 · Q&A e report citabili
     Retrieval lessicale, Q&A Pi e citazioni verificate          :done, m2base, 2026-09-24, 1d
@@ -35,9 +35,9 @@ gantt
 
 ## Stato al momento
 
-- **M1: estrazione e audit locali verificati, revisione CI in corso:** PDF per blocchi con pagina/coordinate/intervallo; TXT grezzo; DOCX con ordine di paragrafi e tabelle; warning per contenuti non coperti; verifica hash e reimportazione idempotente. Journal locale registra azioni, riferimenti, copertura citazioni e stime token/costo Pi senza testo sorgente o query. Suite locale: 14 test verdi, incluse fixture temporanee PDF/DOCX/TXT e un flusso end-to-end CLI. CI aggiunta ma ancora da eseguire su GitHub.
+- **M1 completata per la prima release locale:** PDF per blocchi con pagina/coordinate/intervallo; TXT grezzo; DOCX con ordine di paragrafi e tabelle; warning per contenuti non coperti; hash e reimportazione idempotente. Journal locale registra azioni, riferimenti e stime di token/costo Pi senza testo sorgente o query. 14 test locali verdi e workflow CI GitHub verde sul commit `dcd7dfe`.
 - **M2 in corso:** `/ask-secretary <domanda>` usa il modello autenticato in Pi, dopo aver mostrato gli estratti precisi e ricevuto conferma. Il verificatore locale blocca ID inesistenti e riferimenti fuori dal pacchetto retrieval; claim e bozza vengono salvati localmente. La prova automatica controlla l'esistenza e la provenienza dell'evidenza, non l'entailment semantico.
-- **Da completare in M2:** golden eval per domande/risposte, revisione dei claim semanticamente supportati, controlli prompt injection e metriche citation correctness. La ricerca rimane lessicale (nessun embedding).
+- **Da completare in M2:** golden eval per domande/risposte, verifica semantica dei claim e controlli prompt injection più misurabili. Il report corrente marca i claim come “da verificare”: la copertura cita ID esistenti e recuperati, ma non prova che le frasi siano supportate. La ricerca rimane lessicale (nessun embedding).
 - **Non iniziato:** M3–M5. Restano CSV/XLSX, calcoli e grafici, connettori in modalità bozza, grant di approvazione, audit completo, backup e hardening.
 
 ## Pubblicazione del codice su GitHub

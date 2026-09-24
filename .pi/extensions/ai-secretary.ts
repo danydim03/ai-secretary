@@ -211,7 +211,7 @@ export default function (pi: ExtensionAPI) {
         const evidence = Array.isArray(claim.evidence_details) ? claim.evidence_details as Array<Record<string, unknown>> : [];
         if (claim.status === "assumption") lines.push(`- **Ipotesi:** ${claim.text}`);
         else if (claim.status === "supported" && evidence.length) {
-          lines.push(`- ${claim.text}`);
+          lines.push(`- **Da verificare:** ${claim.text}`);
           const linkedIds = Array.isArray(claim.evidence) ? claim.evidence.map(String) : [];
           for (const [index, item] of evidence.entries()) {
             const locator = item.source_locator as Record<string, unknown>;
@@ -220,7 +220,7 @@ export default function (pi: ExtensionAPI) {
           }
         } else lines.push(`- **Non verificato:** ${claim.text}`);
       }
-      const report = `## AI Secretary · risposta verificata\n\n${lines.join("\n")}\n\nCopertura citazioni sui claim fattuali: ${(claimSetChecked.citation_coverage * 100).toFixed(0)}%. Le citazioni sono state controllate localmente; il controllo conferma che i riferimenti esistono, non la correttezza semantica del claim.\n\nEvidenze e claim set salvati in \`${outputPath}\` e \`${claimPath}\`.`;
+      const report = `## AI Secretary · bozza con riferimenti controllati\n\n${lines.join("\n")}\n\nCopertura citazioni sui claim fattuali: ${(claimSetChecked.citation_coverage * 100).toFixed(0)}% (ID presenti e compresi nel pacchetto recuperato). Il controllo automatico non determina se l'evidenza dimostri semanticamente la frase: verifica ogni passaggio e la fonte prima di usare questa bozza.\n\nEvidenze e claim set salvati in \`${outputPath}\` e \`${claimPath}\`.`;
       const reportPath = join(ctx.cwd, "data", "runs", `report-${runId}.md`);
       const writeReport = await pi.exec(python, ["-c", "import sys; open(sys.argv[1], 'w', encoding='utf-8').write(sys.argv[2])", reportPath, report], { cwd: ctx.cwd, signal: ctx.signal, timeout: 30_000 });
       if (writeReport.code !== 0) throw new Error(`Salvataggio del report non riuscito: ${writeReport.stderr.trim()}`);
