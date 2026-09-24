@@ -113,15 +113,23 @@ def extract(path: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
 
 def ingest(source: Path, store: Path) -> dict[str, Any]:
     source = source.expanduser().resolve()
+    store = store.expanduser().resolve()
     if not source.is_file():
         raise ValueError(f"File non trovato: {source}")
     if source.suffix.lower() not in SUPPORTED:
         raise ValueError(f"Formato non supportato: {source.suffix}. Formati disponibili: PDF, TXT, DOCX.")
     digest = _sha256_file(source)
+    canonical_dir = store / "canonical"
+    if canonical_dir.is_dir():
+        for existing_path in sorted(canonical_dir.glob("doc_*.json")):
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            if existing.get("source", {}).get("sha256") == digest:
+                validate_document(existing)
+                verify_source_integrity(existing, store)
+                return {"document": existing, "canonical_path": str(existing_path), "duplicate": True}
     source_id = f"src_{uuid.uuid4().hex}"
     document_id = f"doc_{uuid.uuid4().hex}"
     raw_dir = store / "raw" / source_id
-    canonical_dir = store / "canonical"
     raw_dir.mkdir(parents=True, exist_ok=False)
     canonical_dir.mkdir(parents=True, exist_ok=True)
     raw_path = raw_dir / source.name
@@ -151,7 +159,7 @@ def ingest(source: Path, store: Path) -> dict[str, Any]:
     validate_document(doc)
     out = canonical_dir / f"{document_id}.json"
     out.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return {"document": doc, "canonical_path": str(out)}
+    return {"document": doc, "canonical_path": str(out), "duplicate": False}
 
 
 def load_document(document_id: str, store: Path) -> dict[str, Any]:

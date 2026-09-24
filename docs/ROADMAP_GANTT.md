@@ -11,12 +11,15 @@ gantt
     section M1 · Fondazioni affidabili
     CLI locale, archivio originale, hash e Canonical Document :done, m1base, 2026-09-24, 1d
     Estensione Pi: importa, cerca, mostra, valida                :done, m1pi, 2026-09-24, 1d
-    Fedeltà estrazione e riferimenti pagina/blocco              :active, m1extract, 2026-09-24, 7d
-    Fixture PDF/DOCX/TXT, copertura e criteri di accettazione   :m1accept, after m1extract, 5d
+    Estrazione fedele PDF/TXT/DOCX e import idempotente          :done, m1extract, 2026-09-24, 1d
+    Fixture PDF/DOCX/TXT e criteri di estrazione                 :done, m1accept, 2026-09-24, 1d
+    Journal audit locale e stima uso modello                     :done, m1audit, 2026-09-24, 1d
+    Primo run CI su GitHub e revisione finale M1                 :active, m1ci, 2026-09-25, 3d
 
     section M2 · Q&A e report citabili
-    Retrieval ibrido, claim con evidenze, Writer e Verifier     :m2, 2026-10-06, 10d
-    Evals e revisione umana del workflow                        :m2eval, after m2, 5d
+    Retrieval lessicale, Q&A Pi e citazioni verificate          :done, m2base, 2026-09-24, 1d
+    Entailment, eval golden set e test injection                 :active, m2, 2026-09-25, 10d
+    Ricerca ibrida e misura copertura/correttezza citazioni     :m2eval, after m2, 5d
 
     section M3 · Dati, calcoli e grafici
     Ingestione CSV/XLSX e calcolo riproducibile                 :m3data, 2026-10-21, 10d
@@ -32,11 +35,11 @@ gantt
 
 ## Stato al momento
 
-- **Fatto:** scheletro Python e CLI; copia locale del file sorgente con SHA-256; Canonical Document JSON; validazione interna; ricerca lessicale con ID evidenza; estensione Pi con elenco/importazione/ricerca/visualizzazione/validazione. Ricerca e visualizzazione chiedono conferma prima di passare estratti al modello.
-- **In corso:** M1, con estrazione PDF a blocchi e locatori, preservazione del testo grezzo TXT/DOCX, warning per contenuti non coperti e verifica dell'integrità della copia. Questi cambiamenti recenti non sono ancora stati verificati con la suite.
-- **Da fare per chiudere M1:** fixture rappresentative, prove d'accettazione, copertura di estrazione e verifica end-to-end dell'estensione Pi.
-- **Non iniziato:** M2–M5. Non ci sono ancora risposte AI citabili, OCR, retrieval vettoriale, workflow di calcolo/grafici o connettori di pubblicazione.
+- **M1: estrazione e audit locali verificati, revisione CI in corso:** PDF per blocchi con pagina/coordinate/intervallo; TXT grezzo; DOCX con ordine di paragrafi e tabelle; warning per contenuti non coperti; verifica hash e reimportazione idempotente. Journal locale registra azioni, riferimenti, copertura citazioni e stime token/costo Pi senza testo sorgente o query. Suite locale: 14 test verdi, incluse fixture temporanee PDF/DOCX/TXT e un flusso end-to-end CLI. CI aggiunta ma ancora da eseguire su GitHub.
+- **M2 in corso:** `/ask-secretary <domanda>` usa il modello autenticato in Pi, dopo aver mostrato gli estratti precisi e ricevuto conferma. Il verificatore locale blocca ID inesistenti e riferimenti fuori dal pacchetto retrieval; claim e bozza vengono salvati localmente. La prova automatica controlla l'esistenza e la provenienza dell'evidenza, non l'entailment semantico.
+- **Da completare in M2:** golden eval per domande/risposte, revisione dei claim semanticamente supportati, controlli prompt injection e metriche citation correctness. La ricerca rimane lessicale (nessun embedding).
+- **Non iniziato:** M3–M5. Restano CSV/XLSX, calcoli e grafici, connettori in modalità bozza, grant di approvazione, audit completo, backup e hardening.
 
 ## Pubblicazione del codice su GitHub
 
-La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. Il branch `main` contiene il commit iniziale del progetto. L'indice Git era stato controllato prima del push: `.env`, `data/` e `.venv/` non sono inclusi. La cartella locale segue ora la repository remota.
+La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. Il branch `main` contiene il commit iniziale del progetto. L'indice Git era stato controllato prima del push: `.env`, `data/` e `.venv/` non sono inclusi. La cartella locale segue ora la repository remota. Aggiornare il branch pubblico dopo le verifiche della slice M2.
