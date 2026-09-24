@@ -92,6 +92,18 @@ function limitEvidenceForModel(results: Array<Record<string, unknown>>): Array<R
   });
 }
 
+async function recordDisclosureDecision(
+  pi: ExtensionAPI,
+  cwd: string,
+  runId: string,
+  purpose: string,
+  approved: boolean,
+  itemCount: number,
+  signal?: AbortSignal,
+): Promise<void> {
+  await runSecretary(pi, cwd, ["record-event", "disclosure_decision", JSON.stringify({ run_id: runId, purpose, approved, item_count: itemCount })], signal);
+}
+
 export default function (pi: ExtensionAPI) {
   async function confirmMetadataDisclosure(ctx: { hasUI: boolean; ui: { confirm: (title: string, message: string) => Promise<boolean> } }, preview: string): Promise<boolean> {
     if (!ctx.hasUI) throw new Error("Elenco documenti bloccato: serve una conferma interattiva prima di condividere nomi e metadati col modello.");
@@ -110,6 +122,7 @@ export default function (pi: ExtensionAPI) {
       if (!ctx.hasUI) throw new Error("Elenco documenti bloccato: è necessaria una conferma interattiva prima della condivisione.");
       const output = await runSecretary(pi, ctx.cwd, ["list"], signal);
       const approved = await confirmMetadataDisclosure(ctx, output);
+      await recordDisclosureDecision(pi, ctx.cwd, randomUUID(), "list_document_metadata", approved, output ? output.split("\n").filter(Boolean).length : 0, signal);
       if (!approved) return { content: [{ type: "text", text: "Elenco non condiviso: non hai autorizzato la comunicazione dei nomi file al modello." }], details: { approved: false } };
       return { content: [{ type: "text", text: output }], details: { approved: true } };
     },
@@ -141,6 +154,7 @@ export default function (pi: ExtensionAPI) {
       if (!packet.results.length) return { content: [{ type: "text", text: "Nessuna evidenza trovata nell'archivio." }], details: { query: params.query, results: 0 } };
       const sharedResults = limitEvidenceForModel(packet.results);
       const approved = await confirmDocumentDisclosure(ctx, evidencePreview(sharedResults), params.query);
+      await recordDisclosureDecision(pi, ctx.cwd, randomUUID(), "search_evidence", approved, sharedResults.length, signal);
       if (!approved) {
         return { content: [{ type: "text", text: "Ricerca non eseguita: non hai autorizzato la condivisione di estratti con il modello." }], details: { query: params.query, approved: false } };
       }
@@ -187,9 +201,11 @@ export default function (pi: ExtensionAPI) {
         `Questa anteprima mostra esattamente i passaggi che verranno inviati al modello selezionato in Pi. Il provider potrebbe elaborarli secondo le condizioni del tuo account.\n\nDomanda: ${query}\n\n${preview}\n\nVuoi continuare?`,
       );
       if (!approved) {
+        await recordDisclosureDecision(pi, ctx.cwd, runId, "document_qa", false, retrieved.results.length, ctx.signal);
         ctx.ui.notify("Domanda annullata; gli estratti sono rimasti locali.", "info");
         return;
       }
+      await recordDisclosureDecision(pi, ctx.cwd, runId, "document_qa", true, sharedResults.length, ctx.signal);
 
       const userMessage: UserMessage = {
         role: "user",
@@ -271,7 +287,11 @@ export default function (pi: ExtensionAPI) {
         "Importare questo documento?",
         `Il file verrà copiato nell'archivio locale AI Secretary e ne verrà estratto il testo.\n\n${filePath}\n\nPi userà poi il tuo provider configurato solo dopo una conferma separata per leggere o cercare nel contenuto. Procedere?`,
       );
-      if (!approved) return { content: [{ type: "text", text: "Importazione annullata." }], details: { filePath, approved: false } };
+      if (!approved) {
+        await recordDisclosureDecision(pi, ctx.cwd, randomUUID(), "document_ingest", false, 1, signal);
+        return { content: [{ type: "text", text: "Importazione annullata." }], details: { filePath, approved: false } };
+      }
+      await recordDisclosureDecision(pi, ctx.cwd, randomUUID(), "document_ingest", true, 1, signal);
       const output = await runSecretary(pi, ctx.cwd, ["ingest", filePath], signal);
       return { content: [{ type: "text", text: output }], details: { filePath, approved: true } };
     },
@@ -295,6 +315,7 @@ export default function (pi: ExtensionAPI) {
       });
       const docInfo = `Documento: ${packet.source_filename}\nSHA-256: ${packet.source_sha256}\n${packet.extraction_warnings ? `Avvisi: ${JSON.stringify(packet.extraction_warnings)}\n` : ""}`;
       const approved = await confirmDocumentDisclosure(ctx, `${docInfo}\n${evidencePreview(sharedResults)}`);
+      await recordDisclosureDecision(pi, ctx.cwd, randomUUID(), "show_document", approved, sharedResults.length, signal);
       if (!approved) {
         return { content: [{ type: "text", text: "Lettura non eseguita: non hai autorizzato la condivisione del testo con il modello." }], details: { documentId: params.document_id, approved: false } };
       }
