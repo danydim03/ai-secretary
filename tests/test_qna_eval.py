@@ -32,7 +32,7 @@ class GoldenQAEvaluationTests(unittest.TestCase):
             self.assertEqual(checked["citation_coverage"], 1.0)
             self.assertEqual(checked["claims"][0]["evidence_details"][0]["document_id"], ingested["document"]["document_id"])
 
-    def test_prompt_injection_fixture_remains_quoted_source_content(self) -> None:
+    def test_prompt_injection_fixture_is_extracted_as_source_text(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             store = Path(temporary) / "store"
             ingest(FIXTURES / "prompt_injection.txt", store)
