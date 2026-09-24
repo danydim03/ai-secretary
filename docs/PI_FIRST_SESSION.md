@@ -1,6 +1,15 @@
 # Prima sessione di lavoro con Pi
 
-Apri un terminale nella cartella `ai-secretary` ed esegui `pi`. Pi caricherà `AGENTS.md` come istruzioni del progetto. Incolla questo prompt come prima richiesta:
+Apri un terminale nella cartella `ai-secretary`. Se non hai ancora configurato l'ambiente Python locale, esegui:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+
+Poi esegui `pi` dalla radice del repository. Pi caricherà `AGENTS.md` come istruzioni del progetto. Incolla questo prompt come prima richiesta:
 
 ```text
 Leggi AGENTS.md, README.md e il piano tecnico in ../../../ai-secretary-implementation-plan.md. Continua la milestone aperta senza chiedere una chiave API: usa il provider già autenticato in Pi per le richieste AI. Mantieni documenti, archivio, claim ed artefatti in locale. Prima di inviare estratti mostra i passaggi esatti e chiedi il consenso; non collegare altri servizi esterni né pubblicare senza una richiesta esplicita. Aggiungi test mirati, verifica il flusso e aggiorna la roadmap con fatti e limiti osservati.

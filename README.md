@@ -6,9 +6,9 @@ Repository GitHub pubblica: [danydim03/ai-secretary](https://github.com/danydim0
 
 Stato e sequenza stimata: [diagramma Gantt](docs/ROADMAP_GANTT.md).
 
-Per iniziare con Pi: `cd ai-secretary && pi`. Dopo aver autorizzato il progetto, l'estensione locale in `.pi/extensions/ai-secretary.ts` espone a Pi strumenti per elencare, importare, cercare, mostrare e validare i documenti. Importazione, condivisione dei nomi e condivisione degli estratti richiedono conferme distinte; elenco, ricerca e lettura mostrano i metadati o gli estratti esatti prima del consenso. Usa `/ask-secretary <domanda>` per cercare nell'archivio e preparare una risposta con claim atomici e fonti; Pi usa il modello/provider già selezionato e autenticato nel tuo account Pi, senza richiedere `OPENAI_API_KEY`. Il modello riceve al massimo 6 estratti, ciascuno limitato a 900 caratteri. Il report viene aperto nell'editor Pi e conservato in `data/runs/` insieme al pacchetto di evidenze e al claim set. Il verificatore locale rifiuta citazioni non presenti nell'archivio o fuori dal pacchetto recuperato. Verifica ID, hash e pagina/blocco; questa versione non controlla automaticamente che il passaggio provi semanticamente la frase, perciò il report resta una bozza da rivedere. Il comando `/secretary` mostra le operazioni disponibili. La prima sessione è descritta in `docs/PI_FIRST_SESSION.md`.
+Per avviare con Pi, installa prima le dipendenze locali come descritto qui sotto e poi esegui `pi` dalla radice del repository. Dopo aver autorizzato il progetto, l'estensione locale in `.pi/extensions/ai-secretary.ts` espone a Pi strumenti per elencare, importare, cercare, mostrare e validare i documenti. Importazione, condivisione dei nomi e condivisione degli estratti richiedono conferme distinte; elenco, ricerca e lettura mostrano i metadati o gli estratti esatti prima del consenso. Usa `/ask-secretary <domanda>` per cercare nell'archivio e preparare una risposta con claim atomici e fonti; Pi usa il modello/provider già selezionato e autenticato nel tuo account Pi, senza richiedere `OPENAI_API_KEY`. Il modello riceve al massimo 6 estratti, ciascuno limitato a 900 caratteri. Il report viene aperto nell'editor Pi e conservato in `data/runs/` insieme al pacchetto di evidenze e al claim set. Il verificatore locale rifiuta citazioni non presenti nell'archivio o fuori dal pacchetto recuperato. Verifica ID, hash e pagina/blocco; questa versione non controlla automaticamente che il passaggio provi semanticamente la frase, perciò il report resta una bozza da rivedere. Il comando `/secretary` mostra le operazioni disponibili. La prima sessione è descritta in `docs/PI_FIRST_SESSION.md`.
 
-## Avvio del prototipo locale (facoltativo)
+## Setup locale e comandi CLI
 
 ```bash
 cd ai-secretary
@@ -16,6 +16,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
+# Avvia Pi dalla radice del repository per usare l'estensione AI Secretary.
+pi
+# In alternativa, usa gli stessi componenti dalla CLI:
 secretary ingest "/percorso/al/documento.pdf"
 secretary list
 secretary show doc_ID
