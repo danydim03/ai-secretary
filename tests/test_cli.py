@@ -27,6 +27,11 @@ class LocalCliWorkflowTests(unittest.TestCase):
 
             ingested = json.loads(self.run_cli(["--store", str(store), "ingest", str(source)]))
             self.assertFalse(ingested["duplicate"])
+            show_path = root / "runs" / "shown.json"
+            self.run_cli(["--store", str(store), "show-to-file", ingested["document_id"], str(show_path)])
+            shown = json.loads(show_path.read_text(encoding="utf-8"))
+            self.assertEqual(shown["source_filename"], "note.txt")
+            self.assertIn("12 maggio 2026", shown["results"][0]["text"])
             packet_path = root / "runs" / "evidence.json"
             self.run_cli(["--store", str(store), "search-to-file", "riunione maggio", str(packet_path)])
             packet = json.loads(packet_path.read_text(encoding="utf-8"))
@@ -47,7 +52,7 @@ class LocalCliWorkflowTests(unittest.TestCase):
             self.assertEqual(checked["citation_coverage"], 1.0)
             audit = json.loads(self.run_cli(["--store", str(store), "audit", "--limit", "50"]))
             self.assertEqual([event["event_type"] for event in audit["events"]], [
-                "document_ingested", "evidence_searched", "claims_verified",
+                "document_ingested", "document_shown", "evidence_searched", "claims_verified",
             ])
 
 

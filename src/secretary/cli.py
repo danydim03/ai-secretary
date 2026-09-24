@@ -23,6 +23,9 @@ def main() -> None:
     p_ingest.add_argument("file", type=Path)
     p_show = sub.add_parser("show", help="Mostra testo e avvisi di un documento")
     p_show.add_argument("document_id")
+    p_show_file = sub.add_parser("show-to-file", help=argparse.SUPPRESS)
+    p_show_file.add_argument("document_id")
+    p_show_file.add_argument("output", type=Path)
     p_list = sub.add_parser("list", help="Elenca documenti archiviati")
     p_validate = sub.add_parser("validate", help="Valida lo schema di un documento archiviato")
     p_validate.add_argument("document_id")
@@ -68,6 +71,28 @@ def main() -> None:
                 print("\nAVVISI")
                 for warning in doc["extraction_warnings"]:
                     print(f"- {warning['message']}")
+        elif args.command == "show-to-file":
+            doc = load_document(args.document_id, args.store)
+            record_event(args.store, "document_shown", {"document_id": args.document_id, "block_count": len(doc["blocks"])})
+            packet = {
+                "document_id": doc["document_id"],
+                "source_id": doc["source"]["source_id"],
+                "source_filename": doc["source"]["original_filename"],
+                "source_sha256": doc["source"]["sha256"],
+                "results": [{
+                    "evidence_id": f"ev_{doc['document_id']}_{block['block_id']}",
+                    "source_filename": doc["source"]["original_filename"],
+                    "source_sha256": doc["source"]["sha256"],
+                    "block_id": block["block_id"],
+                    "type": block["type"],
+                    "source_locator": block["source_locator"],
+                    "text": block["raw_text"],
+                } for block in doc["blocks"]],
+                "extraction_warnings": doc["extraction_warnings"],
+            }
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(json.dumps(packet, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(json.dumps({"blocks": len(packet["results"]), "output": str(args.output)}, ensure_ascii=False))
         elif args.command == "validate":
             doc = load_document(args.document_id, args.store)
             validate_document(doc)

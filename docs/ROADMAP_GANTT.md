@@ -18,7 +18,8 @@ gantt
 
     section M2 · Q&A e report citabili
     Retrieval lessicale, Q&A Pi e citazioni verificate          :done, m2base, 2026-09-24, 1d
-    Entailment, eval golden set e test injection                 :active, m2, 2026-09-25, 10d
+    Eval retrieval/evidence con fixture golden iniziali           :done, m2evalbase, 2026-09-24, 1d
+    Verifica semantica dei claim ed evals LLM                    :active, m2, 2026-09-25, 10d
     Ricerca ibrida e misura copertura/correttezza citazioni     :m2eval, after m2, 5d
 
     section M3 · Dati, calcoli e grafici
@@ -37,9 +38,10 @@ gantt
 
 - **M1 completata per la prima release locale:** PDF per blocchi con pagina/coordinate/intervallo; TXT grezzo; DOCX con ordine di paragrafi e tabelle; warning per contenuti non coperti; hash e reimportazione idempotente. Journal locale registra azioni, riferimenti e stime di token/costo Pi senza testo sorgente o query. 14 test locali verdi e workflow CI GitHub verde sul commit `dcd7dfe`.
 - **M2 in corso:** `/ask-secretary <domanda>` usa il modello autenticato in Pi, dopo aver mostrato gli estratti precisi e ricevuto conferma. Il verificatore locale blocca ID inesistenti e riferimenti fuori dal pacchetto retrieval; claim e bozza vengono salvati localmente. La prova automatica controlla l'esistenza e la provenienza dell'evidenza, non l'entailment semantico.
-- **Da completare in M2:** golden eval per domande/risposte, verifica semantica dei claim e controlli prompt injection più misurabili. Il report corrente marca i claim come “da verificare”: la copertura cita ID esistenti e recuperati, ma non prova che le frasi siano supportate. La ricerca rimane lessicale (nessun embedding).
+- **Eval M2 iniziali:** due fixture sintetiche controllano il recupero della data attesa, i riferimenti citabili e il mantenimento di un tentativo di prompt injection come testo sorgente. Suite locale complessiva: 16 test verdi; i test non chiamano un modello esterno.
+- **Da completare in M2:** eval live per qualità delle risposte, revisione semantica dei claim e test dell'interazione Pi end-to-end. Il report marca i claim come “da verificare”: la copertura cita ID esistenti e recuperati, ma non prova che le frasi siano supportate. La ricerca rimane lessicale (nessun embedding).
 - **Non iniziato:** M3–M5. Restano CSV/XLSX, calcoli e grafici, connettori in modalità bozza, grant di approvazione, audit completo, backup e hardening.
 
 ## Pubblicazione del codice su GitHub
 
-La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. Il branch `main` contiene il commit iniziale del progetto. L'indice Git era stato controllato prima del push: `.env`, `data/` e `.venv/` non sono inclusi. La cartella locale segue ora la repository remota. Aggiornare il branch pubblico dopo le verifiche della slice M2.
+La repository pubblica [danydim03/ai-secretary](https://github.com/danydim03/ai-secretary) è stata creata e verificata nel browser. `main` segue la repository remota; `.env`, `data/` e `.venv/` restano esclusi. La CI GitHub è verde sul commit `dcd7dfe`; una nuova esecuzione è in corso dopo la correzione del testo Q&A.
